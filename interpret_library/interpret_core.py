@@ -2,12 +2,12 @@ def _search_var(name):
     for var in Instruction.variable_list:
         if var["name"] == name:
             return var
-        else:
-            return {
-                 "name": "",
-                 "type": "",
-                 "value": ""
-            }
+
+    return {
+         "name": "",
+         "type": "",
+         "value": ""
+    }
 
 
 def _declare_variable(name, typ):
@@ -45,7 +45,7 @@ class Instruction:
                 "content": arg.text
             }
             args.append(arg_dic)
-            return args
+        return args
 
     def perform(self):
         if self._opc == "PUSHS":
@@ -65,9 +65,20 @@ class Instruction:
 
             print(var["value"])
 
+        if self._opc == "MOVE":
+            arg1 = Instruction._args_to_list(self)[0]
+            arg2 = Instruction._args_to_list(self)[1]
 
-class IArgument:
-    def __init__(self, typ, value):
-        self._typ = typ
-        self._value = value
+            var = _search_var(arg1["content"])
+
+            _init_variable(arg1["content"], arg2["content"])
+
+            if var["type"] == "":
+                var["type"] = arg2["type"]
+
+        if self._opc == "DEFVAR":
+            arg1 = Instruction._args_to_list(self)[0]
+
+            _declare_variable(arg1["content"], "")
+
 

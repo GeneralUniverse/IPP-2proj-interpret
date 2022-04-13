@@ -19,3 +19,6 @@ if __name__ == '__main__':
         i = Instruction(opc, child)
         i.perform()
 
+    for var in Instruction.variable_list:
+        print(var)
+#

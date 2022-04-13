@@ -10,7 +10,25 @@
         <arg1 type="var">GF@val</arg1>
     </instruction>
 
-    <instruction order="5" opcode="write">
+    <instruction order="4" opcode="defvar">
+        <arg1 type="">GF@val2</arg1>
+    </instruction>
+
+    <instruction order="5" opcode="move">
+        <arg1 type="var">GF@val</arg1>
+        <arg2 type="int">500</arg2>
+    </instruction>
+    <instruction order="5" opcode="move">
+        <arg1 type="var">GF@val2</arg1>
+        <arg2 type="int">300</arg2>
+    </instruction>
+
+    <instruction order="6" opcode="write">
+        <arg1 type="var">GF@val2</arg1>
+    </instruction>
+
+    <instruction order="7" opcode="write">
         <arg1 type="var">GF@val</arg1>
     </instruction>
+
    </program>
