@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<program language="IPPcode22" name="Stack test">
+ <instruction order="1" opcode="PUSHS">
+        <arg1 type="string">ahoj sveteee</arg1>
+    </instruction>
+     <instruction order="2" opcode="PUSHS">
+        <arg1 type="string">zdareeec</arg1>
+    </instruction>
+     <instruction order="3" opcode="pops">
+        <arg1 type="var">GF@val</arg1>
+    </instruction>
+
+    <instruction order="5" opcode="write">
+        <arg1 type="var">GF@val</arg1>
+    </instruction>
+   </program>

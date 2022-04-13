@@ -12,8 +12,8 @@ if __name__ == '__main__':
     r_input = terminal_args_check.get_read_input(args)
 
     root = xml_check.get_root(src)
+    root[:] = sorted(root, key=lambda kid: int(kid.get("order")))
 
-    stack = []
     for child in root:
         opc = child.attrib["opcode"]
         i = Instruction(opc, child)
