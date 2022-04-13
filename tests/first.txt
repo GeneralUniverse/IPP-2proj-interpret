@@ -6,8 +6,9 @@
     <instruction order="4" opcode="PUSHS">
         <arg1 type="int">32</arg1>
     </instruction>
-    <instruction order="12" opcode="PUSHs">
+    <instruction order="8" opcode="PUSHs">
         <arg1 type="string">ahoj</arg1>
+        <arg2 type="string">cuuus</arg2>
     </instruction>
     <instruction order="1" opcode="DEFVAR">
         <arg1 type="var">GF@val</arg1>

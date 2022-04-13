@@ -2,7 +2,7 @@ import xml.etree.ElementTree as etree
 import re
 
 
-def _checkProgramTag(tree):
+def _check_program_element(tree):
     root = tree.getroot()
 
     if root.tag != 'program':
@@ -13,7 +13,7 @@ def _checkProgramTag(tree):
         exit(32)
 
 
-def _checkInstructions(tree):
+def _check_instructions(tree):
     for child in tree.getroot():
         if child.tag != "instruction":
             exit(32)
@@ -21,23 +21,23 @@ def _checkInstructions(tree):
             exit(32)
 
 
-def _checkArgs(tree):
+def _check_args(tree):
     for child in tree.getroot():
-        for childchild in child:
-            if not (re.match("arg[123]", childchild.tag)):
+        for child_child in child:
+            if not (re.match("arg[123]", child_child.tag)):
                 exit(32)
-            if not "type" in childchild.attrib.keys():
+            if "type" not in child_child.attrib.keys():
                 exit(32)
 
 
-def getRoot(src):
+def get_root(src):
     try:
         tree = etree.parse(src)
     except:
         raise exit(31)
 
-    _checkProgramTag(tree)
-    _checkInstructions(tree)
-    _checkArgs(tree)
+    _check_program_element(tree)
+    _check_instructions(tree)
+    _check_args(tree)
 
     return tree.getroot()
