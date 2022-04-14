@@ -108,7 +108,25 @@ class Instruction:
 
                     vo.set_value(arg1["content"], var1)
 
-        # 3 ARGUMENTS OPERATIONS ##########################
+            if self._opc == "STRLEN":
+                var1 = arg1["content"]
+
+                my_str = vo.get_value(arg2["content"])
+                my_str_len = len(my_str)
+
+                vo.set_value(var1, my_str_len)
+
+            if self._opc == "TYPE":
+                var1 = arg1["content"]
+                var2 = arg2["content"]
+
+                if var2.startswith("GF@"):
+                    typ = vo.search(var2)["type"]
+                else:
+                    typ = arg2["type"]
+
+                vo.set_value(var1, typ)
+                # 3 ARGUMENTS OPERATIONS ##########################
 
         if arg_num == 3:
             arg1 = Instruction._args_to_list(self)[0]
@@ -202,11 +220,24 @@ class Instruction:
                 vo.set_type(var1, "string")
                 vo.set_value(var1, result)
 
-            if self._opc == "STRLEN":
-                print("\n\n\n\n\n")
+            if self._opc == "GETCHAR":
                 var1 = arg1["content"]
                 my_str = vo.get_value(arg2["content"])
-                my_str_len = len(my_str)
+                pos = int(vo.get_value(arg3["content"]))
 
-                vo.set_value(var1, my_str_len)
+                if not(0 < pos < len(my_str)):
+                    exit(58)
 
+                my_char = my_str[pos]
+
+                vo.set_value(var1, my_char)
+
+            if self._opc == "SETCHAR":
+                var1 = arg1["content"]
+                pos = int(vo.get_value(arg2["content"]))
+                my_char = vo.get_value(arg3["content"])[0]
+
+                temp = vo.get_value(var1)
+                temp = temp[:pos] + my_char + temp[pos+1:]
+
+                vo.set_value(var1, temp)

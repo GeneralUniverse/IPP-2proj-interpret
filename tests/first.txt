@@ -39,12 +39,22 @@
     <arg3 type="string"> GF@b</arg3>
     </instruction>
 
-    <instruction order="18" opcode="STRLEN">
+    <instruction order="18" opcode="move">
         <arg1 type="string">GF@a</arg1>
         <arg2 type="string">cusik</arg2>
     </instruction>
 
+    <instruction order="18" opcode="setchar">
+        <arg1 type="string">GF@a</arg1>
+        <arg2 type="string">1</arg2>
+        <arg3 type="string">a</arg3>
 
+    </instruction>
+
+    <instruction order="20" opcode="type">
+        <arg1 type="string">GF@c</arg1>
+        <arg2 type="int">cau ahoj</arg2>
+    </instruction>
     <instruction order="19" opcode="write">
         <arg1 type="string">GF@a</arg1>
     </instruction>

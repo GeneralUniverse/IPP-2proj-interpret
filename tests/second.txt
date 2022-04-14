@@ -86,4 +86,10 @@
         <arg3 type="string"> GF@val4/arg3>
     </instruction>
 
+    <instruction order="18" opcode="type">
+        <arg1 type="string">GF@val5</arg1>
+        <arg2 type="string">cau ahoj</arg2>
+    </instruction>
+
+
    </program>
