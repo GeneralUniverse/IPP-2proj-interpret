@@ -48,5 +48,28 @@
     <instruction order="7" opcode="write">
         <arg1 type="var">GF@val2</arg1>
     </instruction>
+    <instruction order="8" opcode="defvar">
+        <arg1 type="var">GF@val3</arg1>
+    </instruction>
+    <instruction order="9" opcode="int2char">
+        <arg1 type="var">GF@val3</arg1>
+        <arg2 type="int">97</arg2>
+    </instruction>
+    <instruction order="10" opcode="write">
+        <arg1 type="var">GF@val3</arg1>
+    </instruction>
+    <instruction order="11" opcode="defvar">
+        <arg1 type="var">GF@val4</arg1>
+    </instruction>
+    <instruction order="12" opcode="stri2int">
+        <arg1 type="var">GF@val4</arg1>
+        <arg2 type="int">cusak hnusak</arg2>
+        <arg2 type="string">10</arg2>
+    </instruction>
+    <instruction order="13" opcode="write">
+        <arg1 type="var">GF@val4</arg1>
+    </instruction>
+
+
 
    </program>

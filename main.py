@@ -16,9 +16,10 @@ if __name__ == '__main__':
 
     for child in root:
         opc = child.attrib["opcode"]
-        i = Instruction(opc, child)
+        i = Instruction(opc, child, r_input)
         i.perform()
 
+    print()
     for var in Instruction.variable_list:
         print(var)
 #
