@@ -7,7 +7,7 @@ def _check_program_element(tree):
 
     if root.tag != 'program':
         exit(32)
-    if "name" not in root.attrib.keys() or "language" not in root.attrib.keys():
+    if  "language" not in root.attrib.keys():
         exit(32)
     if "IPPcode22" not in root.attrib.values():
         exit(32)

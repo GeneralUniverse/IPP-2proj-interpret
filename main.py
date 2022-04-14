@@ -16,10 +16,19 @@ if __name__ == '__main__':
 
     for child in root:
         opc = child.attrib["opcode"]
-        i = Instruction(opc, child, r_input)
+        r = ""
+
+        if opc == "READ":  # very retarded solution of handling arguments to read function
+            if not r_input:
+                r = input()
+            else:
+                r = r_input.readline()
+
+        i = Instruction(opc, child, r)
         i.perform()
 
     print()
     for var in Instruction.variable_list:
         print(var)
-#
+
+

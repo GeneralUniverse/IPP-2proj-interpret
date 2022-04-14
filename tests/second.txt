@@ -69,7 +69,21 @@
     <instruction order="13" opcode="write">
         <arg1 type="var">GF@val4</arg1>
     </instruction>
+    <instruction order="13" opcode="defvar">
+        <arg1 type="var">GF@val5</arg1>
+    </instruction>
+    <instruction order="14" opcode="read">
+        <arg1 type="var">GF@val5</arg1>
+        <arg1 type="type">bool</arg1>
+    </instruction>
+    <instruction order="15" opcode="write">
+        <arg1 type="var">GF@val5</arg1>
+    </instruction>
 
-
+     <instruction order="16" opcode="concat">
+        <arg1 type="string">GF@val5</arg1>
+        <arg2 type="string">cusik</arg2>
+        <arg3 type="string"> GF@val4/arg3>
+    </instruction>
 
    </program>
