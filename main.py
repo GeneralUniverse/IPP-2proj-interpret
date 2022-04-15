@@ -3,6 +3,7 @@ import re
 from interpret_library import xml_check
 from interpret_library import terminal_args_check
 from interpret_library.interpret_core import Instruction
+import interpret_library.interpret_core as ic
 
 if __name__ == '__main__':
 
@@ -14,18 +15,22 @@ if __name__ == '__main__':
     root = xml_check.get_root(src)
     root[:] = sorted(root, key=lambda kid: int(kid.get("order")))
 
+    instruction_list = []
+    label_list = []
+
+    i = 0
     for child in root:
-        opc = child.attrib["opcode"]
-        r = ""
+        opc = child.attrib["opcode"].upper()
+        ri = ic.get_read_input(r_input, opc)
 
-        if opc == "READ":  # very retarded solution of handling arguments to read function
-            if not r_input:
-                r = input()
-            else:
-                r = r_input.readline()
+        instruction_list.append(Instruction(child, ri, i))
+        i += 1
 
-        i = Instruction(opc, child, r)
-        i.perform()
+    i = 0
+    while i < len(root):
+        instruction_list[i].execute()
+        i = instruction_list[i].get_position_of_next_instruction()
+        i = i + 1
 
     print()
     for var in Instruction.variable_list:

@@ -3,16 +3,17 @@ from interpret_library import variable_operations as vo
 
 
 class Instruction:
-    stack = []
+    var_stack = []
     variable_list = []
+    label_list = []
 
-    def __init__(self, opcode, child, read_input):
-        self._opc = opcode.upper()
+    def __init__(self, child, read_input, numb):
+        self._opc = child.attrib["opcode"].upper()
         self._child = child
-        self._list_of_args = []
         self._read_input = read_input
+        self._numb = numb
 
-    def get_number_of_args(self):
+    def _get_number_of_args(self):
         return len(self._child.getchildren())
 
     def _args_to_list(self):
@@ -25,8 +26,8 @@ class Instruction:
             args.append(arg_dic)
         return args
 
-    def perform(self):
-        arg_num = Instruction.get_number_of_args(self)
+    def execute(self):
+        arg_num = Instruction._get_number_of_args(self)
 
         # 1 ARGUMENTS OPERATIONS ##########################
 
@@ -34,19 +35,33 @@ class Instruction:
             arg1 = Instruction._args_to_list(self)[0]
 
             if self._opc == "PUSHS":
-                Instruction.stack.append(arg1)
+                Instruction.var_stack.append(arg1)
 
             if self._opc == "POPS":
-                stack_vals = Instruction.stack.pop()
+                var_stack_vals = Instruction.var_stack.pop()
 
-                vo.declare(arg1["content"], stack_vals["type"])
-                vo.set_value(arg1["content"], stack_vals["content"])
+                vo.declare(arg1["content"], var_stack_vals["type"])
+                vo.set_value(arg1["content"], var_stack_vals["content"])
 
             if self._opc == "WRITE":
                 sys.stdout.write(vo.get_value(arg1["content"]))
 
             if self._opc == "DEFVAR":
                 vo.declare(arg1["content"], "")
+
+            if self._opc == "LABEL":
+                label_dic = {
+                    "name" : arg1["content"]
+                    "number": self._numb
+                }
+                Instruction.label_list.append(label_dic)
+
+            if self._opc == "JUMP":
+                var1 = arg1["content"]
+
+                num = _get_label_number(var1)
+                self._numb = num
+
 
         # 2 ARGUMENTS OPERATIONS ##########################
 
@@ -241,3 +256,19 @@ class Instruction:
                 temp = temp[:pos] + my_char + temp[pos+1:]
 
                 vo.set_value(var1, temp)
+
+    def get_position_of_next_instruction(self):
+        return self._numb - 1
+
+def get_read_input(r_input, opc):
+    if opc == "READ":
+        if not r_input:
+            r = input()
+        else:
+            r = r_input.readline()
+        return r
+
+def _get_label_number(name):
+    for i in Instruction.label_list:
+        if i["name"] == name:
+            return int(i["number"])
