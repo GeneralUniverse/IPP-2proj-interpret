@@ -10,11 +10,11 @@ class Instruction:
     lf_var_stack = []
     label_list = []
 
-    def __init__(self, child, read_input, numb):
+    def __init__(self, child, read_input, numb_of_instruction):
         self._opc = child.attrib["opcode"].upper()
         self._child = child
         self._read_input = read_input
-        self._numb = numb
+        self._numb = numb_of_instruction
 
     def _get_number_of_args(self):
         return len(self._child.getchildren())
@@ -31,297 +31,304 @@ class Instruction:
 
     def execute(self):
         arg_num = Instruction._get_number_of_args(self)
+        arg1 = None
+        arg2 = None
+        arg3 = None
+
+        if arg_num == 1:
+            arg1 = Instruction._args_to_list(self)[0]
+
+        elif arg_num == 2:
+            arg1 = Instruction._args_to_list(self)[0]
+            arg2 = Instruction._args_to_list(self)[1]
+
+        elif arg_num == 3:
+            arg1 = Instruction._args_to_list(self)[0]
+            arg2 = Instruction._args_to_list(self)[1]
+            arg3 = Instruction._args_to_list(self)[2]
+
+        else:
+            exit(32)
 
         ###################################################
         # 0 ARGUMENTS INSTRUCTIONS ##########################
         ###################################################
 
-        if arg_num == 0:
-            if self._opc == "CREATEFRAME":
-                Instruction.tf_var_list = []
+        if self._opc == "CREATEFRAME":
+            Instruction.tf_var_list = []
 
-            if self._opc == "PUSHFRAME":
-                if not Instruction.tf_var_list:
-                    exit(55)
+        if self._opc == "PUSHFRAME":
+            if not Instruction.tf_var_list:
+                exit(55)
 
-                for tf_var in Instruction.tf_var_list:
-                    tf_var["name"] = re.sub("^TF@", "LF@", tf_var["name"])
+            # saving temporary vars as local vars
+            for tf_var in Instruction.tf_var_list:
+                tf_var["name"] = re.sub("^TF@", "LF@", tf_var["name"])
 
-                Instruction.lf_var_stack.append(Instruction.tf_var_list)
+            Instruction.lf_var_stack.append(Instruction.tf_var_list)
 
-            if self._opc == "POPFRAME":
-                if not Instruction.lf_var_stack:
-                    exit(55)
+        if self._opc == "POPFRAME":
+            if not Instruction.lf_var_stack:
+                exit(55)
 
-                Instruction.tf_var_list = Instruction.lf_var_stack.pop()
+            Instruction.tf_var_list = Instruction.lf_var_stack.pop()
 
-                for lf_var in Instruction.tf_var_list:
-                    lf_var["name"] = re.sub("^LF@", "TF@", lf_var["name"])
+            # when pop, we have to transform local vars to temporary vars
+            for lf_var in Instruction.tf_var_list:
+                lf_var["name"] = re.sub("^LF@", "TF@", lf_var["name"])
 
         ###################################################
         # 1 ARGUMENTS INSTRUCTIONS ##########################
         ###################################################
 
-        if arg_num == 1:
-            arg1 = Instruction._args_to_list(self)[0]
+        if self._opc == "PUSHS":
+            Instruction.var_stack.append(arg1)
 
-            if self._opc == "PUSHS":
-                Instruction.var_stack.append(arg1)
+        if self._opc == "POPS":
+            var_stack_vals = Instruction.var_stack.pop()
 
-            if self._opc == "POPS":
-                var_stack_vals = Instruction.var_stack.pop()
+            vo.declare(arg1["content"], var_stack_vals["type"])
+            vo.set_value(arg1["content"], var_stack_vals["content"])
 
-                vo.declare(arg1["content"], var_stack_vals["type"])
-                vo.set_value(arg1["content"], var_stack_vals["content"])
+        if self._opc == "WRITE":
+            sys.stdout.write(vo.get_value(arg1["content"]))
 
-            if self._opc == "WRITE":
-                sys.stdout.write(vo.get_value(arg1["content"]))
+        if self._opc == "DEFVAR":
+            vo.declare(arg1["content"], "")
 
-            if self._opc == "DEFVAR":
-                vo.declare(arg1["content"], "")
+        if self._opc == "JUMP":
+            var1 = arg1["content"]
 
-            if self._opc == "JUMP":
-                var1 = arg1["content"]
+            num = _get_label_number(var1, self._numb)
+            self._numb = num
 
-                num = _get_label_number(var1, self._numb)
-                self._numb = num
+        if self._opc == "EXIT":
+            var1 = vo.get_value(arg1["content"])
 
-            if self._opc == "EXIT":
-                var1 = vo.get_value(arg1["content"])
+            if not(re.match("[0-49]", var1)):
+                exit(57)
+            sys.stdout.write(var1)
 
-                if not(re.match("[0-49]", var1)):
-                    exit(57)
-                sys.stdout.write(var1)
+        if self._opc == "DPRINT":
+            err_message = vo.get_value(arg1["content"])
+            sys.stderr.write(err_message)
 
-            if self._opc == "DPRINT":
-                err_message = vo.get_value(arg1["content"])
-                sys.stderr.write(err_message)
-
-            # TODO - BREAK
+        if self._opc == "BREAK":
+            pass
 
         ###################################################
         # 2 ARGUMENTS INSTRUCTIONS ##########################
         ###################################################
+        if self._opc == "MOVE":
+            vo.set_value(arg1["content"], vo.get_value(arg2["content"]))
 
-        if arg_num == 2:
-            arg1 = Instruction._args_to_list(self)[0]
-            arg2 = Instruction._args_to_list(self)[1]
+            # TODO - type condition
+            vo.set_type(arg1["content"], arg2["type"])
 
-            if self._opc == "MOVE":
-                vo.set_value(arg1["content"], vo.get_value(arg2["content"]))
+        if self._opc == "NOT":
+            result = "false"
 
-                # TODO - type condition
-                vo.set_type(arg1["content"], arg2["type"])
-
-            if self._opc == "NOT":
+            if vo.get_value(arg2["content"]) == "false":
+                result = "true"
+            elif arg2["content"] == "true":
                 result = "false"
+            else:
+                exit("SOMETHING")
 
-                if vo.get_value(arg2["content"]) == "false":
-                    result = "true"
-                elif arg2["content"] == "true":
-                    result = "false"
-                else:
-                    exit("SOMETHING")
+            # TODO - make function for it
+            # var1 = var.search(arg1["content"])
+            # var1["type"] = "bool"
+            vo.set_value(arg1["content"], result)
 
-                # TODO - make function for it
-                # var1 = var.search(arg1["content"])
-                # var1["type"] = "bool"
-                vo.set_value(arg1["content"], result)
+        if self._opc == "INT2CHAR":
+            val = vo.get_value(arg2["content"])
 
-            if self._opc == "INT2CHAR":
-                val = vo.get_value(arg2["content"])
+            try:
+                uni_num = int(val)
+                char = chr(uni_num)
+            except:
+                raise exit(58)
 
+            vo.set_type(arg1["content"], "string")
+            vo.set_value(arg1["content"], char)
+
+        if self._opc == "READ":
+            typ = arg2["content"]
+            my_input = self._read_input
+
+            if typ == "string":
+                vo.set_value(arg1["content"], my_input.strip())
+
+            if typ == "int":
                 try:
-                    uni_num = int(val)
-                    char = chr(uni_num)
+                    num = int(my_input)
                 except:
-                    raise exit(58)
+                    num = "nil@nil"
+                vo.set_value(arg1["content"], num)
 
-                vo.set_type(arg1["content"], "string")
-                vo.set_value(arg1["content"], char)
+            if typ == "bool":
+                var1 = "false"
 
-            if self._opc == "READ":
-                typ = arg2["content"]
-                my_input = self._read_input
+                if my_input.upper() == "TRUE":
+                    var1 = "true"
 
-                if typ == "string":
-                    vo.set_value(arg1["content"], my_input.strip())
+                vo.set_value(arg1["content"], var1)
 
-                if typ == "int":
-                    try:
-                        num = int(my_input)
-                    except:
-                        num = "nil@nil"
-                    vo.set_value(arg1["content"], num)
+        if self._opc == "STRLEN":
+            var1 = arg1["content"]
 
-                if typ == "bool":
-                    var1 = "false"
+            my_str = vo.get_value(arg2["content"])
+            my_str_len = len(my_str)
 
-                    if my_input.upper() == "TRUE":
-                        var1 = "true"
+            vo.set_value(var1, my_str_len)
 
-                    vo.set_value(arg1["content"], var1)
+        if self._opc == "TYPE":
+            var1 = arg1["content"]
+            var2 = arg2["content"]
 
-            if self._opc == "STRLEN":
-                var1 = arg1["content"]
+            if var2.startswith("GF@"):
+                typ = vo.search(var2)["type"]
+            else:
+                typ = arg2["type"]
 
-                my_str = vo.get_value(arg2["content"])
-                my_str_len = len(my_str)
-
-                vo.set_value(var1, my_str_len)
-
-            if self._opc == "TYPE":
-                var1 = arg1["content"]
-                var2 = arg2["content"]
-
-                if var2.startswith("GF@"):
-                    typ = vo.search(var2)["type"]
-                else:
-                    typ = arg2["type"]
-
-                vo.set_value(var1, typ)
+            vo.set_value(var1, typ)
 
         ###################################################
         # 3 ARGUMENTS INSTRUCTIONS ##########################
         ###################################################
 
-        if arg_num == 3:
-            arg1 = Instruction._args_to_list(self)[0]
-            arg2 = Instruction._args_to_list(self)[1]
-            arg3 = Instruction._args_to_list(self)[2]
+        # INSTRUCTIONS with numbers
+        if self._opc in ("ADD", "SUB", "MUL", "IDIV"):
+            if vo.get_type(arg2) != "int" or vo.get_type(arg3) != "int":
+                exit(53)
 
-            # INSTRUCTIONS with numbers
-            if self._opc in ("ADD", "SUB", "MUL", "IDIV"):
-                if vo.get_type(arg2) != "int" or vo.get_type(arg3) != "int":
-                    exit(53)
+            num1 = int(vo.get_value(arg2["content"]))
+            num2 = int(vo.get_value(arg3["content"]))
+            result = 0
 
-                num1 = int(vo.get_value(arg2["content"]))
-                num2 = int(vo.get_value(arg3["content"]))
-                result = 0
+            if self._opc == "ADD":
+                result = num1 + num2
 
-                if self._opc == "ADD":
-                    result = num1 + num2
+            if self._opc == "SUB":
+                result = num1 - num2
 
-                if self._opc == "SUB":
-                    result = num1 - num2
+            if self._opc == "MUL":
+                result = num1*num2
 
-                if self._opc == "MUL":
-                    result = num1*num2
+            if self._opc == "IDIV":
+                if num2 == 0:
+                    exit(57)
+                result = num1 / num2
 
-                if self._opc == "IDIV":
-                    if num2 == 0:
-                        exit(57)
-                    result = num1 / num2
+            vo.set_value(arg1["content"], result)
+            vo.set_type(arg1["content"], "int")
 
-                vo.set_value(arg1["content"], result)
-                vo.set_type(arg1["content"], "int")
+        # comparing instructions
+        if self._opc in ("LT", "GT", "EQ"):
+            result = "false"
+            var1 = vo.get_value(arg2["content"])
+            var2 = vo.get_value(arg3["content"])
 
-            # comparing instructions
-            if self._opc in ("LT", "GT", "EQ"):
-                result = "false"
-                var1 = vo.get_value(arg2["content"])
-                var2 = vo.get_value(arg3["content"])
+            if self._opc == "LT":
+                if var1 < var2:
+                    result = "true"
 
-                if self._opc == "LT":
-                    if var1 < var2:
-                        result = "true"
+            if self._opc == "GT":
+                if var1 > var2:
+                    result = "true"
 
-                if self._opc == "GT":
-                    if var1 > var2:
-                        result = "true"
+            if self._opc == "EQ":
+                if var1 == var2:
+                    result = "true"
 
-                if self._opc == "EQ":
-                    if var1 == var2:
-                        result = "true"
+            vo.set_type(arg1["content"], "bool")
+            vo.set_value(arg1["content"], result)
 
-                vo.set_type(arg1["content"], "bool")
-                vo.set_value(arg1["content"], result)
+        # logical instructions # NOT is in 2 argument section
+        if self._opc in ("AND", "OR"):
+            result = "false"
+            var1 = vo.get_value(arg2["content"])
+            var2 = vo.get_value(arg3["content"])
 
-            # logical instructions # NOT is in 2 argument section
-            if self._opc in ("AND", "OR"):
-                result = "false"
-                var1 = vo.get_value(arg2["content"])
-                var2 = vo.get_value(arg3["content"])
+            if self._opc == "AND":
+                if var1 == "true" and var2 == "true":
+                    result = "true"
 
-                if self._opc == "AND":
-                    if var1 == "true" and var2 == "true":
-                        result = "true"
+            if self._opc == "OR":
+                if var2 == "true" or var1 == "true":
+                    result = "true"
 
-                if self._opc == "OR":
-                    if var2 == "true" or var1 == "true":
-                        result = "true"
+            vo.set_type(arg1["content"], "bool")
+            vo.set_value(arg1["content"], result)
 
-                vo.set_type(arg1["content"], "bool")
-                vo.set_value(arg1["content"], result)
+        # other
+        if self._opc == "STRI2INT":
+            my_str = vo.get_value(arg2["content"])
+            position = int(vo.get_value(arg3["content"]))
 
-            # other
-            if self._opc == "STRI2INT":
-                my_str = vo.get_value(arg2["content"])
-                position = int(vo.get_value(arg3["content"]))
+            if not(0 < position < len(my_str)):
+                exit(58)
 
-                if not(0 < position < len(my_str)):
-                    exit(58)
+            selected_char = my_str[position]
 
-                selected_char = my_str[position]
+            vo.set_value(arg1["content"], ord(selected_char))
 
-                vo.set_value(arg1["content"], ord(selected_char))
+        if self._opc == "CONCAT":
+            var1 = arg1["content"]
+            var2 = arg2["type"]
+            var3 = arg3["type"]
 
-            if self._opc == "CONCAT":
-                var1 = arg1["content"]
-                var2 = arg2["type"]
-                var3 = arg3["type"]
+            if var2 != "string" or var3 != "string":
+                exit("nejaka concat chyba")
 
-                if var2 != "string" or var3 != "string":
-                    exit("nejaka concat chyba")
+            result = arg2["content"] + arg2["content"]
 
-                result = arg2["content"] + arg2["content"]
+            vo.set_type(var1, "string")
+            vo.set_value(var1, result)
 
-                vo.set_type(var1, "string")
-                vo.set_value(var1, result)
+        if self._opc == "GETCHAR":
+            var1 = arg1["content"]
+            my_str = vo.get_value(arg2["content"])
+            pos = int(vo.get_value(arg3["content"]))
 
-            if self._opc == "GETCHAR":
-                var1 = arg1["content"]
-                my_str = vo.get_value(arg2["content"])
-                pos = int(vo.get_value(arg3["content"]))
+            if not(0 < pos < len(my_str)):
+                exit(58)
 
-                if not(0 < pos < len(my_str)):
-                    exit(58)
+            my_char = my_str[pos]
 
-                my_char = my_str[pos]
+            vo.set_value(var1, my_char)
 
-                vo.set_value(var1, my_char)
+        if self._opc == "SETCHAR":
+            var1 = arg1["content"]
+            pos = int(vo.get_value(arg2["content"]))
+            my_char = vo.get_value(arg3["content"])[0]
 
-            if self._opc == "SETCHAR":
-                var1 = arg1["content"]
-                pos = int(vo.get_value(arg2["content"]))
-                my_char = vo.get_value(arg3["content"])[0]
+            temp = vo.get_value(var1)
+            temp = temp[:pos] + my_char + temp[pos+1:]
 
-                temp = vo.get_value(var1)
-                temp = temp[:pos] + my_char + temp[pos+1:]
+            vo.set_value(var1, temp)
 
-                vo.set_value(var1, temp)
+        if self._opc == "JUMPIFEQ":
+            var1 = arg1["content"]
+            var2 = vo.get_value(arg2["content"])
+            var3 = vo.get_value(arg3["content"])
+            num = self._numb
 
-            if self._opc == "JUMPIFEQ":
-                var1 = arg1["content"]
-                var2 = vo.get_value(arg2["content"])
-                var3 = vo.get_value(arg3["content"])
-                num = self._numb
+            if var2 == var3:
+                num = _get_label_number(var1, self._numb)
 
-                if var2 == var3:
-                    num = _get_label_number(var1, self._numb)
+            self._numb = num
 
-                self._numb = num
+        if self._opc == "JUMPIFNEQ":
+            var1 = arg1["content"]
+            var2 = vo.get_value(arg2["content"])
+            var3 = vo.get_value(arg3["content"])
+            num = self._numb
 
-            if self._opc == "JUMPIFNEQ":
-                var1 = arg1["content"]
-                var2 = vo.get_value(arg2["content"])
-                var3 = vo.get_value(arg3["content"])
-                num = self._numb
+            if var2 != var3:
+                num = _get_label_number(var1, self._numb)
 
-                if var2 != var3:
-                    num = _get_label_number(var1, self._numb)
-
-                self._numb = num
+            self._numb = num
 
     def get_position_of_next_instruction(self):
         return self._numb

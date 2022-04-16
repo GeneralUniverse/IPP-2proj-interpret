@@ -1,18 +1,22 @@
 import sys
 import re
-from interpret_library import xml_check
-from interpret_library import terminal_args_check
+from interpret_library import xml_checked
+from interpret_library import terminal_args
 from interpret_library.interpret_core import Instruction
 import interpret_library.interpret_core as ic
 
 if __name__ == '__main__':
 
-    args = terminal_args_check.create_args()
+    args = terminal_args.create_args()
 
-    src = terminal_args_check.get_source(args)
-    r_input = terminal_args_check.get_read_input(args)
+    src = terminal_args.get_source(args)
+    r_input = terminal_args.get_read_input(args)
 
-    root = xml_check.get_root(src)
+    if not src and not r_input:
+        exit(10)
+
+    root = xml_checked.get_root(src)
+
     root[:] = sorted(root, key=lambda kid: int(kid.get("order")))
 
     instruction_list = []
@@ -37,6 +41,9 @@ if __name__ == '__main__':
         i = instruction_list[i].get_position_of_next_instruction()
         i = i + 1
 
+
+
+
     print()
     print("GF:")
     for var in Instruction.gf_var_list:
@@ -45,7 +52,11 @@ if __name__ == '__main__':
     for var in Instruction.lf_var_stack:
         print(var)
     print("TF:")
-    for var in Instruction.tf_var_list:
-        print(var)
+
+    if not Instruction.tf_var_list:
+        print("not tf")
+    else:
+        for var in Instruction.tf_var_list:
+            print(var)
 
 

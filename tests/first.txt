@@ -1,73 +1,40 @@
-<program language="IPPcode22">
-    <instruction order="1" opcode="label">
-        <arg1 type="label">hello</arg1>
+<?xml version="1.0" encoding="UTF-8"?>
+<program language="IPPcode22" name="Stack test">
+    <instruction order="2" opcode="PUSHS">
+        <arg1 type="string">světe</arg1>
     </instruction>
-    <instruction order="1" opcode="DEFVAR">
-        <arg1 type="var">GF@a</arg1>
+    <instruction order="4" opcode="PUSHS">
+        <arg1 type="int">32</arg1>
     </instruction>
-
-    <instruction order="3" opcode="DEFVAR">
-        <arg1 type="var">GF@b</arg1>
+    <instruction order="6" opcode="PUSHs">
+        <arg1 type="string">ahoj</arg1>
     </instruction>
-    <instruction order="3" opcode="DEFVAR">
-        <arg1 type="var">GF@c</arg1>
+    <instruction order="7" opcode="DEFVAR">
+        <arg1 type="var">GF@val</arg1>
     </instruction>
-
-    <instruction order="4" opcode="READ">
-        <arg1 type="var">GF@a</arg1>
-        <arg2 type="type">int</arg2>
+    <instruction order="8" opcode="DEFVAR">
+        <arg1 type="var">GF@space</arg1>
     </instruction>
-    <instruction order="5" opcode="WRITE">
-        <arg1 type="var">GF@a</arg1>
+    <instruction order="9" opcode="PopS">
+        <arg1 type="var">GF@val</arg1>
     </instruction>
-
-    <instruction order="6" opcode="READ">
-        <arg1 type="var">GF@b</arg1>
-        <arg2 type="type">string</arg2>
+    <instruction order="10" opcode="Write">
+        <arg1 type="var">GF@val</arg1>
     </instruction>
-    <instruction order="7" opcode="WRITE">
-        <arg1 type="var">GF@b</arg1>
+    <instruction order="13" opcode="POPS">
+        <arg1 type="var">GF@val</arg1>
     </instruction>
-
-    <instruction order="8" opcode="READ">
-        <arg1 type="var">GF@c</arg1>
-        <arg2 type="type">bool</arg2>
+    <instruction order="17" opcode="INT2CHAR">
+        <arg1 type="var">GF@space</arg1>
+        <arg2 type="var">GF@val</arg2>
     </instruction>
-    <instruction order="9" opcode="WRITE">
-        <arg1 type="var">GF@c</arg1>
+    <instruction order="20" opcode="WRITE">
+        <arg1 type="var">GF@space</arg1>
     </instruction>
-
-    <instruction order="16" opcode="concat">
-    <arg1 type="string">GF@a</arg1>
-    <arg2 type="string">cusik</arg2>
-    <arg3 type="string"> GF@b</arg3>
+    <instruction order="30" opcode="POPS">
+        <arg1 type="var">GF@val</arg1>
     </instruction>
-
-    <instruction order="18" opcode="move">
-        <arg1 type="string">GF@a</arg1>
-        <arg2 type="string">cusik</arg2>
+    <instruction order="40" opcode="WRITE">
+        <arg1 type="var">GF@val</arg1>
     </instruction>
-
-    <instruction order="18" opcode="setchar">
-        <arg1 type="string">GF@a</arg1>
-        <arg2 type="string">1</arg2>
-        <arg3 type="string">a</arg3>
-
-    </instruction>
-
-    <instruction order="20" opcode="type">
-        <arg1 type="string">GF@c</arg1>
-        <arg2 type="int">cau ahoj</arg2>
-    </instruction>
-    <instruction order="21" opcode="write">
-        <arg1 type="string">GF@a</arg1>
-    </instruction>
-
-    <instruction order="23" opcode="jumpifneq">
-        <arg1 type="label">hello</arg1>
-        <arg2 type="label">hello</arg2>
-        <arg3 type="label">hello</arg3>
-    </instruction>
-
-
 </program>
