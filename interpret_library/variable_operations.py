@@ -1,3 +1,5 @@
+import re
+
 from interpret_library import interpret_core as ic
 
 
@@ -32,12 +34,15 @@ def set_type(name, typ):
 
 
 def get_value(name):
-    if name.startswith("GF@"):
+    if re.match("^GF@", name):
         return str(search(name)["value"])
     else:
         return str(name)
 
 
-def get_type(name):
-    typ = search(name)["type"]
-    return typ
+def get_type(arg):
+    if re.match("^GF@", arg["content"]):
+        print(search(arg["content"])["type"])
+        return search(arg["content"])["type"]
+    else:
+        return arg["type"]

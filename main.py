@@ -18,14 +18,19 @@ if __name__ == '__main__':
     instruction_list = []
     label_list = []
 
+    # making and list of instances of Instruction, so we can call whatever instruction we want later
+    # creating label list before calling any jump, so we can jump to the front
     i = 0
     for child in root:
         opc = child.attrib["opcode"].upper()
         ri = ic.get_read_input(r_input, opc)
+        instr = Instruction(child, ri, i)
 
-        instruction_list.append(Instruction(child, ri, i))
+        instr.add_label_to_list()
+        instruction_list.append(instr)
         i += 1
 
+    # executing all the instruction by their index
     i = 0
     while i < len(root):
         instruction_list[i].execute()

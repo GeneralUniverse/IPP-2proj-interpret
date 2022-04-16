@@ -1,3 +1,4 @@
+import re
 import sys
 from interpret_library import variable_operations as vo
 
@@ -29,7 +30,9 @@ class Instruction:
     def execute(self):
         arg_num = Instruction._get_number_of_args(self)
 
+        ###################################################
         # 1 ARGUMENTS OPERATIONS ##########################
+        ###################################################
 
         if arg_num == 1:
             arg1 = Instruction._args_to_list(self)[0]
@@ -49,21 +52,28 @@ class Instruction:
             if self._opc == "DEFVAR":
                 vo.declare(arg1["content"], "")
 
-            if self._opc == "LABEL":
-                label_dic = {
-                    "name" : arg1["content"]
-                    "number": self._numb
-                }
-                Instruction.label_list.append(label_dic)
-
             if self._opc == "JUMP":
                 var1 = arg1["content"]
 
-                num = _get_label_number(var1)
+                num = _get_label_number(var1, self._numb)
                 self._numb = num
 
+            if self._opc == "EXIT":
+                var1 = vo.get_value(arg1["content"])
 
+                if not(re.match("[0-49]", var1)):
+                    exit(57)
+                sys.stdout.write(var1)
+
+            if self._opc == "DPRINT":
+                err_message = vo.get_value(arg1["content"])
+                sys.stderr.write(err_message)
+
+            # TODO - BREAK
+
+        ###################################################
         # 2 ARGUMENTS OPERATIONS ##########################
+        ###################################################
 
         if arg_num == 2:
             arg1 = Instruction._args_to_list(self)[0]
@@ -82,11 +92,14 @@ class Instruction:
 
                 if vo.get_value(arg2["content"]) == "false":
                     result = "true"
-                if arg2["content"] == "true":
-                    result == "false"
+                elif arg2["content"] == "true":
+                    result = "false"
+                else:
+                    exit("SOMETHING")
 
-                var = var.search(arg1["content"])
-                var["type"] = "bool"
+                # TODO - make function for it
+                # var1 = var.search(arg1["content"])
+                # var1["type"] = "bool"
                 vo.set_value(arg1["content"], result)
 
             if self._opc == "INT2CHAR":
@@ -141,7 +154,10 @@ class Instruction:
                     typ = arg2["type"]
 
                 vo.set_value(var1, typ)
-                # 3 ARGUMENTS OPERATIONS ##########################
+
+        ###################################################
+        # 3 ARGUMENTS OPERATIONS ##########################
+        ###################################################
 
         if arg_num == 3:
             arg1 = Instruction._args_to_list(self)[0]
@@ -150,11 +166,13 @@ class Instruction:
 
             # operations with number
             if self._opc in ("ADD", "SUB", "MUL", "IDIV"):
-                if arg2["type"] != "int" or arg3["type"] != "int":
+                if vo.get_type(arg2) != "int" or vo.get_type(arg3) != "int":
+                    print(self._numb)
                     exit("pocetni operace s ne cisli")
 
                 num1 = int(vo.get_value(arg2["content"]))
                 num2 = int(vo.get_value(arg3["content"]))
+                result = 0
 
                 if self._opc == "ADD":
                     result = num1 + num2
@@ -257,8 +275,46 @@ class Instruction:
 
                 vo.set_value(var1, temp)
 
+            if self._opc == "JUMPIFEQ":
+                var1 = arg1["content"]
+                var2 = vo.get_value(arg2["content"])
+                var3 = vo.get_value(arg3["content"])
+                num = self._numb
+
+                if var2 == var3:
+                    num = _get_label_number(var1, self._numb)
+
+                self._numb = num
+
+            if self._opc == "JUMPIFNEQ":
+                var1 = arg1["content"]
+                var2 = vo.get_value(arg2["content"])
+                var3 = vo.get_value(arg3["content"])
+                num = self._numb
+
+                if var2 != var3:
+                    num = _get_label_number(var1, self._numb)
+
+                self._numb = num
+
     def get_position_of_next_instruction(self):
-        return self._numb - 1
+        return self._numb
+
+    def add_label_to_list(self):
+        arg1 = Instruction._args_to_list(self)[0]
+
+        if self._opc == "LABEL":
+            label_dic = {
+                "name": arg1["content"],
+                "number": self._numb
+            }
+
+            for label in Instruction.label_list:
+                if label["name"] == arg1["content"]:
+                    exit(52)
+
+            Instruction.label_list.append(label_dic)
+
 
 def get_read_input(r_input, opc):
     if opc == "READ":
@@ -268,7 +324,9 @@ def get_read_input(r_input, opc):
             r = r_input.readline()
         return r
 
-def _get_label_number(name):
+
+def _get_label_number(name, current_line_number):
     for i in Instruction.label_list:
         if i["name"] == name:
             return int(i["number"])
+    return current_line_number

@@ -1,95 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<program language="IPPcode22" name="Stack test">
- <instruction order="1" opcode="PUSHS">
-        <arg1 type="string">ahoj sveteee</arg1>
+<program language="IPPcode22" name="correct">
+	<instruction order="1" opcode="DEFVAR">
+		<arg1 type="var">GF@var</arg1>
+	</instruction>
+	<instruction order="2" opcode="DEFVAR">
+		<arg1 type="var">GF@var2</arg1>
+	</instruction>
+	<instruction order="3" opcode="MOVE">
+		<arg1 type="var">GF@var2</arg1>
+		<arg2 type="int">2</arg2>
+	</instruction>
+	<instruction order="4" opcode="ADD">
+		<arg1 type="var">GF@var</arg1>
+		<arg2 type="int">2</arg2>
+		<arg3 type="var">GF@var2</arg3>
+	</instruction>
+	<instruction order="5" opcode="MUL">
+		<arg1 type="var">GF@var</arg1>
+		<arg2 type="int">2</arg2>
+		<arg3 type="var">GF@var</arg3>
+	</instruction>
+	<instruction order="6" opcode="SUB">
+		<arg1 type="var">GF@var</arg1>
+		<arg2 type="var">GF@var</arg2>
+		<arg3 type="int">2</arg3>
+	</instruction>
+	<instruction order="7" opcode="IDIV">
+		<arg1 type="var">GF@var</arg1>
+		<arg2 type="var">GF@var</arg2>
+		<arg3 type="int">2</arg3>
+	</instruction>
+	<instruction order="8" opcode="WRITE">
+        <arg1 type="var">GF@var</arg1>
     </instruction>
-     <instruction order="2" opcode="PUSHS">
-        <arg1 type="string">zdareeec</arg1>
-    </instruction>
-     <instruction order="3" opcode="pops">
-        <arg1 type="var">GF@val</arg1>
-    </instruction>
-
-    <instruction order="4" opcode="defvar">
-        <arg1 type="">GF@val1</arg1>
-    </instruction>
-    <instruction order="4" opcode="defvar">
-        <arg1 type="">GF@val2</arg1>
-    </instruction>
-
-    <instruction order="5" opcode="add">
-        <arg1 type="var">GF@val1</arg1>
-        <arg2 type="int">500</arg2>
-        <arg3 type="int">5</arg3>
-    </instruction>
-
-    <instruction order="5" opcode="MUL">
-        <arg1 type="var">GF@val2</arg1>
-        <arg2 type="int">100</arg2>
-        <arg3 type="int">150</arg3>
-    </instruction>
-
-    <instruction order="5" opcode="gt">
-        <arg1 type="var">GF@val1</arg1>
-        <arg2 type="int">ahoj</arg2>
-        <arg3 type="int">ne</arg3>
-    </instruction>
-
-    <instruction order="5" opcode="and">
-        <arg1 type="var">GF@val2</arg1>
-        <arg2 type="int">true</arg2>
-        <arg3 type="int">true</arg3>
-    </instruction>
-
-    <instruction order="6" opcode="write">
-        <arg1 type="var">GF@val1</arg1>
-    </instruction>
-
-    <instruction order="7" opcode="write">
-        <arg1 type="var">GF@val2</arg1>
-    </instruction>
-    <instruction order="8" opcode="defvar">
-        <arg1 type="var">GF@val3</arg1>
-    </instruction>
-    <instruction order="9" opcode="int2char">
-        <arg1 type="var">GF@val3</arg1>
-        <arg2 type="int">97</arg2>
-    </instruction>
-    <instruction order="10" opcode="write">
-        <arg1 type="var">GF@val3</arg1>
-    </instruction>
-    <instruction order="11" opcode="defvar">
-        <arg1 type="var">GF@val4</arg1>
-    </instruction>
-    <instruction order="12" opcode="stri2int">
-        <arg1 type="var">GF@val4</arg1>
-        <arg2 type="int">cusak hnusak</arg2>
-        <arg2 type="string">10</arg2>
-    </instruction>
-    <instruction order="13" opcode="write">
-        <arg1 type="var">GF@val4</arg1>
-    </instruction>
-    <instruction order="13" opcode="defvar">
-        <arg1 type="var">GF@val5</arg1>
-    </instruction>
-    <instruction order="14" opcode="read">
-        <arg1 type="var">GF@val5</arg1>
-        <arg1 type="type">bool</arg1>
-    </instruction>
-    <instruction order="15" opcode="write">
-        <arg1 type="var">GF@val5</arg1>
-    </instruction>
-
-     <instruction order="16" opcode="concat">
-        <arg1 type="string">GF@val5</arg1>
-        <arg2 type="string">cusik</arg2>
-        <arg3 type="string"> GF@val4/arg3>
-    </instruction>
-
-    <instruction order="18" opcode="type">
-        <arg1 type="string">GF@val5</arg1>
-        <arg2 type="string">cau ahoj</arg2>
-    </instruction>
-
-
-   </program>
+</program>
