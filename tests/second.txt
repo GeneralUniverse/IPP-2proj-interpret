@@ -9,12 +9,14 @@
     <instruction order="6" opcode="PUSHs">
         <arg1 type="string">ahoj</arg1>
     </instruction>
+
     <instruction order="7" opcode="DEFVAR">
-        <arg1 type="var">GF@val</arg1>
+        <arg1 type="var">TF@val</arg1>
     </instruction>
     <instruction order="8" opcode="DEFVAR">
-        <arg1 type="var">GF@space</arg1>
+        <arg1 type="var">TF@val</arg1>
     </instruction>
+
     <instruction order="9" opcode="PopS">
         <arg1 type="var">GF@val</arg1>
     </instruction>
@@ -34,6 +36,8 @@
     <instruction order="30" opcode="POPS">
         <arg1 type="var">GF@val</arg1>
     </instruction>
+
+
     <instruction order="40" opcode="WRITE">
         <arg1 type="var">GF@val</arg1>
     </instruction>

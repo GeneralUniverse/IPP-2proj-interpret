@@ -15,24 +15,34 @@ def search(name):
         if var["name"] == name:
             return var
     return {
-        "name": "",
-        "type": "",
-        "value": ""
+        exit(54)
     }
 
 
 def declare(name, typ):
+    # can't use search function due to exit 54
+    currect_list = ic.Instruction.gf_var_list
+
+    if re.match("^TF@", name):
+        if ic.Instruction.tf_var_list is not None:
+            currect_list = ic.Instruction.tf_var_list
+        else:
+            exit(55)
+
+    for var in currect_list:
+        if var["name"] == name:
+            exit(52)
+
     var = {
         "name": name,
         "type": typ,
         "value": ""
     }
+
     if re.match("^TF@", name):
         ic.Instruction.tf_var_list.append(var)
-    elif re.match("^GF@", name):
+    if re.match("^GF@", name):
         ic.Instruction.gf_var_list.append(var)
-    else:
-        exit("nejaka declare chyba")
 
 
 def set_value(name, value):

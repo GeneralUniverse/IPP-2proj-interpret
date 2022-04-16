@@ -31,11 +31,14 @@ class Instruction:
 
     def execute(self):
         arg_num = Instruction._get_number_of_args(self)
+
         arg1 = None
         arg2 = None
         arg3 = None
+        if arg_num == 0:
+            pass
 
-        if arg_num == 1:
+        elif arg_num == 1:
             arg1 = Instruction._args_to_list(self)[0]
 
         elif arg_num == 2:
@@ -49,6 +52,8 @@ class Instruction:
 
         else:
             exit(32)
+
+        # TODO - check number of args
 
         ###################################################
         # 0 ARGUMENTS INSTRUCTIONS ##########################
@@ -85,10 +90,12 @@ class Instruction:
             Instruction.var_stack.append(arg1)
 
         if self._opc == "POPS":
-            var_stack_vals = Instruction.var_stack.pop()
+            if not Instruction.var_stack:
+                exit(56)
 
-            vo.declare(arg1["content"], var_stack_vals["type"])
-            vo.set_value(arg1["content"], var_stack_vals["content"])
+            var_stack_val = Instruction.var_stack.pop()
+
+            vo.set_value(arg1["content"], vo.get_value(var_stack_val["content"]))
 
         if self._opc == "WRITE":
             sys.stdout.write(vo.get_value(arg1["content"]))
@@ -299,6 +306,7 @@ class Instruction:
             vo.set_value(var1, my_char)
 
         if self._opc == "SETCHAR":
+            var1 = arg1["content"]
             var1 = arg1["content"]
             pos = int(vo.get_value(arg2["content"]))
             my_char = vo.get_value(arg3["content"])[0]
