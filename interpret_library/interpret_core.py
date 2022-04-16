@@ -5,7 +5,9 @@ from interpret_library import variable_operations as vo
 
 class Instruction:
     var_stack = []
-    variable_list = []
+    gf_var_list = []
+    tf_var_list = None
+    lf_var_stack = []
     label_list = []
 
     def __init__(self, child, read_input, numb):
@@ -31,7 +33,33 @@ class Instruction:
         arg_num = Instruction._get_number_of_args(self)
 
         ###################################################
-        # 1 ARGUMENTS OPERATIONS ##########################
+        # 0 ARGUMENTS INSTRUCTIONS ##########################
+        ###################################################
+
+        if arg_num == 0:
+            if self._opc == "CREATEFRAME":
+                Instruction.tf_var_list = []
+
+            if self._opc == "PUSHFRAME":
+                if not Instruction.tf_var_list:
+                    exit(55)
+
+                for tf_var in Instruction.tf_var_list:
+                    tf_var["name"] = re.sub("^TF@", "LF@", tf_var["name"])
+
+                Instruction.lf_var_stack.append(Instruction.tf_var_list)
+
+            if self._opc == "POPFRAME":
+                if not Instruction.lf_var_stack:
+                    exit(55)
+
+                Instruction.tf_var_list = Instruction.lf_var_stack.pop()
+
+                for lf_var in Instruction.tf_var_list:
+                    lf_var["name"] = re.sub("^LF@", "TF@", lf_var["name"])
+
+        ###################################################
+        # 1 ARGUMENTS INSTRUCTIONS ##########################
         ###################################################
 
         if arg_num == 1:
@@ -72,7 +100,7 @@ class Instruction:
             # TODO - BREAK
 
         ###################################################
-        # 2 ARGUMENTS OPERATIONS ##########################
+        # 2 ARGUMENTS INSTRUCTIONS ##########################
         ###################################################
 
         if arg_num == 2:
@@ -80,12 +108,10 @@ class Instruction:
             arg2 = Instruction._args_to_list(self)[1]
 
             if self._opc == "MOVE":
-                var = vo.search(arg1["content"])
-
                 vo.set_value(arg1["content"], vo.get_value(arg2["content"]))
 
-                if var["type"] == "":  # move set up type for defined variables
-                    var["type"] = arg2["type"]
+                # TODO - type condition
+                vo.set_type(arg1["content"], arg2["type"])
 
             if self._opc == "NOT":
                 result = "false"
@@ -156,7 +182,7 @@ class Instruction:
                 vo.set_value(var1, typ)
 
         ###################################################
-        # 3 ARGUMENTS OPERATIONS ##########################
+        # 3 ARGUMENTS INSTRUCTIONS ##########################
         ###################################################
 
         if arg_num == 3:
@@ -164,11 +190,10 @@ class Instruction:
             arg2 = Instruction._args_to_list(self)[1]
             arg3 = Instruction._args_to_list(self)[2]
 
-            # operations with number
+            # INSTRUCTIONS with numbers
             if self._opc in ("ADD", "SUB", "MUL", "IDIV"):
                 if vo.get_type(arg2) != "int" or vo.get_type(arg3) != "int":
-                    print(self._numb)
-                    exit("pocetni operace s ne cisli")
+                    exit(53)
 
                 num1 = int(vo.get_value(arg2["content"]))
                 num2 = int(vo.get_value(arg3["content"]))
@@ -189,6 +214,7 @@ class Instruction:
                     result = num1 / num2
 
                 vo.set_value(arg1["content"], result)
+                vo.set_type(arg1["content"], "int")
 
             # comparing instructions
             if self._opc in ("LT", "GT", "EQ"):
@@ -301,9 +327,9 @@ class Instruction:
         return self._numb
 
     def add_label_to_list(self):
-        arg1 = Instruction._args_to_list(self)[0]
-
         if self._opc == "LABEL":
+            arg1 = Instruction._args_to_list(self)[0]
+
             label_dic = {
                 "name": arg1["content"],
                 "number": self._numb

@@ -68,8 +68,6 @@
         <arg2 type="label">hello</arg2>
         <arg3 type="label">hello</arg3>
     </instruction>
-    <instruction order="24" opcode="dprint">
-        <arg1 type="string">cus</arg1>
-    </instruction>
+
 
 </program>

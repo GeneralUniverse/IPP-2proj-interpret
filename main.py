@@ -38,7 +38,14 @@ if __name__ == '__main__':
         i = i + 1
 
     print()
-    for var in Instruction.variable_list:
+    print("GF:")
+    for var in Instruction.gf_var_list:
+        print(var)
+    print("LF:")
+    for var in Instruction.lf_var_stack:
+        print(var)
+    print("TF:")
+    for var in Instruction.tf_var_list:
         print(var)
 
 
