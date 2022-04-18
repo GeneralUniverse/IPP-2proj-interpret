@@ -9,6 +9,7 @@ class Instruction:
     tf_var_list = None
     lf_var_stack = []
     label_list = []
+    call_stack = []
 
     def __init__(self, child, read_input, numb_of_instruction):
         self._opc = child.attrib["opcode"].upper()
@@ -82,6 +83,14 @@ class Instruction:
             for lf_var in Instruction.tf_var_list:
                 lf_var["name"] = re.sub("^LF@", "TF@", lf_var["name"])
 
+        if self._opc == "RETURN":
+            try:
+                call_numb = Instruction.call_stack.pop()
+            except:
+                raise exit(56)
+
+            self._numb = call_numb
+
         ###################################################
         # 1 ARGUMENTS INSTRUCTIONS ##########################
         ###################################################
@@ -106,7 +115,7 @@ class Instruction:
         if self._opc == "JUMP":
             var1 = arg1["content"]
 
-            num = _get_label_number(var1, self._numb)
+            num = _get_label_number(var1)
             self._numb = num
 
         if self._opc == "EXIT":
@@ -123,9 +132,15 @@ class Instruction:
         if self._opc == "BREAK":
             pass
 
+        if self._opc == "CALL":
+            Instruction.call_stack.append(self._numb)
+
+            self._numb = _get_label_number(arg1["content"])
+
         ###################################################
-        # 2 ARGUMENTS INSTRUCTIONS ##########################
+        # 2 ARGUMENTS INSTRUCTIONS ########################
         ###################################################
+
         if self._opc == "MOVE":
             vo.set_value(arg1["content"], vo.get_value(arg2["content"]))
 
@@ -307,7 +322,6 @@ class Instruction:
 
         if self._opc == "SETCHAR":
             var1 = arg1["content"]
-            var1 = arg1["content"]
             pos = int(vo.get_value(arg2["content"]))
             my_char = vo.get_value(arg3["content"])[0]
 
@@ -323,7 +337,7 @@ class Instruction:
             num = self._numb
 
             if var2 == var3:
-                num = _get_label_number(var1, self._numb)
+                num = _get_label_number(var1)
 
             self._numb = num
 
@@ -334,7 +348,7 @@ class Instruction:
             num = self._numb
 
             if var2 != var3:
-                num = _get_label_number(var1, self._numb)
+                num = _get_label_number(var1)
 
             self._numb = num
 
@@ -366,8 +380,8 @@ def get_read_input(r_input, opc):
         return r
 
 
-def _get_label_number(name, current_line_number):
+def _get_label_number(name):
     for i in Instruction.label_list:
         if i["name"] == name:
             return int(i["number"])
-    return current_line_number
+    exit(52)
