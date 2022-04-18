@@ -7,6 +7,8 @@ def search(name):
     currect_list = ic.Instruction.gf_var_list
 
     if re.match("^TF@", name):
+        if not ic.Instruction.tf_var_list:
+            exit(55)
         currect_list = ic.Instruction.tf_var_list
     if re.match("^LF@", name):
         currect_list = ic.Instruction.lf_var_stack[-1]

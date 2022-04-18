@@ -44,19 +44,19 @@ if __name__ == '__main__':
 
 
 
-    print()
-    print("GF:")
-    for var in Instruction.gf_var_list:
-        print(var)
-    print("LF:")
-    for var in Instruction.lf_var_stack:
-        print(var)
-    print("TF:")
-
-    if not Instruction.tf_var_list:
-        print("not tf")
-    else:
-        for var in Instruction.tf_var_list:
-            print(var)
+    # print()
+    # print("GF:")
+    # for var in Instruction.gf_var_list:
+    #     print(var)
+    # print("LF:")
+    # for var in Instruction.lf_var_stack:
+    #     print(var)
+    # print("TF:")
+    #
+    # if not Instruction.tf_var_list:
+    #     print("not tf")
+    # else:
+    #     for var in Instruction.tf_var_list:
+    #         print(var)
 
 

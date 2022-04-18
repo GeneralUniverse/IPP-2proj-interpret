@@ -72,6 +72,7 @@ class Instruction:
                 tf_var["name"] = re.sub("^TF@", "LF@", tf_var["name"])
 
             Instruction.lf_var_stack.append(Instruction.tf_var_list)
+            Instruction.tf_var_list = None
 
         if self._opc == "POPFRAME":
             if not Instruction.lf_var_stack:
@@ -127,7 +128,7 @@ class Instruction:
 
             if not(re.match("[0-49]", var1)):
                 exit(57)
-            sys.stdout.write(var1)
+            exit(int(var1))
 
         if self._opc == "DPRINT":
             err_message = vo.get_value(arg1["content"])
@@ -355,6 +356,8 @@ class Instruction:
             var1 = arg1["content"]
             var2 = vo.get_value(arg2["content"])
             var3 = vo.get_value(arg3["content"])
+            typ2 = vo.get_type(arg2)
+            typ3 = vo.get_type(arg3)
             num = self._numb
 
             if typ2 == typ3 or typ2 == "nil" or typ3 == "nil":
