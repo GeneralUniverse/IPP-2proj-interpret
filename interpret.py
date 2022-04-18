@@ -30,6 +30,8 @@ if __name__ == '__main__':
         ri = ic.get_read_input(r_input, opc)
         instr = Instruction(child, ri, i)
 
+        xml_checked.opcode_and_no_args_check(instr, opc)
+
         instr.add_label_to_list()
         instruction_list.append(instr)
         i += 1

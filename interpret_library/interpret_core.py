@@ -1,7 +1,7 @@
 import re
 import sys
 from interpret_library import variable_operations as vo
-
+from interpret_library import xml_checked
 
 class Instruction:
     var_stack = []
@@ -17,7 +17,7 @@ class Instruction:
         self._read_input = read_input
         self._numb = numb_of_instruction
 
-    def _get_number_of_args(self):
+    def get_number_of_args(self):
         return len(self._child.getchildren())
 
     def _args_to_list(self):
@@ -31,7 +31,7 @@ class Instruction:
         return args
 
     def execute(self):
-        arg_num = Instruction._get_number_of_args(self)
+        arg_num = Instruction.get_number_of_args(self)
 
         arg1 = None
         arg2 = None
@@ -239,7 +239,7 @@ class Instruction:
             if self._opc == "IDIV":
                 if num2 == 0:
                     exit(57)
-                result = num1 / num2
+                result = num1 // num2
 
             vo.set_value(arg1["content"], result)
             vo.set_type(arg1["content"], "int")
