@@ -2,6 +2,7 @@ import re
 import sys
 from interpret_library import variable_operations as vo
 
+
 class Instruction:
     var_stack = []
     gf_var_list = []
@@ -86,7 +87,7 @@ class Instruction:
         if self._opc == "RETURN":
             try:
                 call_numb = Instruction.call_stack.pop()
-            except:
+            except Exception:
                 raise exit(56)
 
             self._numb = call_numb
@@ -177,7 +178,7 @@ class Instruction:
             try:
                 uni_num = int(val)
                 char = chr(uni_num)
-            except:
+            except Exception:
                 raise exit(58)
 
             vo.set_type(arg1["content"], "string")
@@ -193,7 +194,7 @@ class Instruction:
             if typ == "int":
                 try:
                     num = int(my_input)
-                except:
+                except Exception:
                     num = "nil"
                     vo.set_type(arg1["content"], "nil")
                 vo.set_value(arg1["content"], num)
@@ -231,7 +232,7 @@ class Instruction:
             try:
                 num1 = int(vo.get_value(arg2["content"]))
                 num2 = int(vo.get_value(arg3["content"]))
-            except:
+            except Exception:
                 raise exit(32)
 
             result = 0
@@ -299,7 +300,7 @@ class Instruction:
             my_str = vo.get_value(arg2["content"])
             try:
                 position = int(vo.get_value(arg3["content"]))
-            except:
+            except Exception:
                 raise exit(32)
 
             if not(0 < position < len(my_str)):
@@ -327,7 +328,7 @@ class Instruction:
             my_str = vo.get_value(arg2["content"])
             try:
                 pos = int(vo.get_value(arg3["content"]))
-            except:
+            except Exception:
                 raise exit(32)
 
             if not(0 < pos < len(my_str)):
@@ -341,7 +342,7 @@ class Instruction:
             var1 = arg1["content"]
             try:
                 pos = int(vo.get_value(arg2["content"]))
-            except:
+            except Exception:
                 raise exit(32)
             my_char = vo.get_value(arg3["content"])[0]
 
