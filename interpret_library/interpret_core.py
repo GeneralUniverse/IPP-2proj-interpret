@@ -107,7 +107,11 @@ class Instruction:
             vo.set_value(arg1["content"], vo.get_value(var_stack_val["content"]))
 
         if self._opc == "WRITE":
-            sys.stdout.write(vo.get_value(arg1["content"]))
+            type1 = vo.get_type(arg1)
+            if type1 == "nil":
+                sys.stdout.write("")
+            else:
+                sys.stdout.write(vo.get_value(arg1["content"]))
 
         if self._opc == "DEFVAR":
             vo.declare(arg1["content"], "")
@@ -157,9 +161,7 @@ class Instruction:
             else:
                 exit("SOMETHING")
 
-            # TODO - make function for it
-            # var1 = var.search(arg1["content"])
-            # var1["type"] = "bool"
+            vo.set_type(arg1, "bool")
             vo.set_value(arg1["content"], result)
 
         if self._opc == "INT2CHAR":
@@ -185,7 +187,8 @@ class Instruction:
                 try:
                     num = int(my_input)
                 except:
-                    num = "nil@nil"
+                    num = "nil"
+                    vo.set_type(arg1["content"], "nil")
                 vo.set_value(arg1["content"], num)
 
             if typ == "bool":
@@ -206,13 +209,8 @@ class Instruction:
 
         if self._opc == "TYPE":
             var1 = arg1["content"]
-            var2 = arg2["content"]
 
-            if var2.startswith("GF@"):
-                typ = vo.search(var2)["type"]
-            else:
-                typ = arg2["type"]
-
+            typ = vo.get_type(arg2)
             vo.set_value(var1, typ)
 
         ###################################################
@@ -250,6 +248,9 @@ class Instruction:
             result = "false"
             var1 = vo.get_value(arg2["content"])
             var2 = vo.get_value(arg3["content"])
+
+            if vo.get_type(arg2) == "nil" and self._opc != "EQ":
+                exit(53)
 
             if self._opc == "LT":
                 if var1 < var2:
@@ -301,7 +302,7 @@ class Instruction:
             var3 = arg3["type"]
 
             if var2 != "string" or var3 != "string":
-                exit("nejaka concat chyba")
+                exit(53)
 
             result = arg2["content"] + arg2["content"]
 
@@ -326,6 +327,10 @@ class Instruction:
             my_char = vo.get_value(arg3["content"])[0]
 
             temp = vo.get_value(var1)
+
+            if pos >= len(temp) or len(temp) == 0:
+                exit(58)
+
             temp = temp[:pos] + my_char + temp[pos+1:]
 
             vo.set_value(var1, temp)
@@ -334,10 +339,15 @@ class Instruction:
             var1 = arg1["content"]
             var2 = vo.get_value(arg2["content"])
             var3 = vo.get_value(arg3["content"])
+            typ2 = vo.get_type(arg2)
+            typ3 = vo.get_type(arg3)
             num = self._numb
 
-            if var2 == var3:
-                num = _get_label_number(var1)
+            if typ2 == typ3 or typ2 == "nil" or typ3 == "nil":
+                if var2 == var3:
+                    num = _get_label_number(var1)
+            else:
+                exit(53)
 
             self._numb = num
 
@@ -347,8 +357,11 @@ class Instruction:
             var3 = vo.get_value(arg3["content"])
             num = self._numb
 
-            if var2 != var3:
-                num = _get_label_number(var1)
+            if typ2 == typ3 or typ2 == "nil" or typ3 == "nil":
+                if var2 != var3:
+                    num = _get_label_number(var1)
+            else:
+                exit(53)
 
             self._numb = num
 
