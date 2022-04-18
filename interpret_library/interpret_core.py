@@ -1,7 +1,6 @@
 import re
 import sys
 from interpret_library import variable_operations as vo
-from interpret_library import xml_checked
 
 class Instruction:
     var_stack = []
@@ -109,10 +108,17 @@ class Instruction:
 
         if self._opc == "WRITE":
             type1 = vo.get_type(arg1)
+            output = vo.get_value(arg1["content"])
+
+            re.escape(output)
             if type1 == "nil":
                 sys.stdout.write("")
             else:
-                sys.stdout.write(vo.get_value(arg1["content"]))
+                esc_seq = re.findall(r"\\[0-9]{3}", output)  # make a list of all escape seq
+                for s in esc_seq:
+                    # every escape seq replace with her unicode char of its number
+                    output = output.replace(s, chr(int(s[2:])))
+                sys.stdout.write(output)
 
         if self._opc == "DEFVAR":
             vo.declare(arg1["content"], "")
@@ -222,9 +228,12 @@ class Instruction:
         if self._opc in ("ADD", "SUB", "MUL", "IDIV"):
             if vo.get_type(arg2) != "int" or vo.get_type(arg3) != "int":
                 exit(53)
+            try:
+                num1 = int(vo.get_value(arg2["content"]))
+                num2 = int(vo.get_value(arg3["content"]))
+            except:
+                raise exit(32)
 
-            num1 = int(vo.get_value(arg2["content"]))
-            num2 = int(vo.get_value(arg3["content"]))
             result = 0
 
             if self._opc == "ADD":
@@ -288,7 +297,10 @@ class Instruction:
         # other
         if self._opc == "STRI2INT":
             my_str = vo.get_value(arg2["content"])
-            position = int(vo.get_value(arg3["content"]))
+            try:
+                position = int(vo.get_value(arg3["content"]))
+            except:
+                raise exit(32)
 
             if not(0 < position < len(my_str)):
                 exit(58)
@@ -313,7 +325,10 @@ class Instruction:
         if self._opc == "GETCHAR":
             var1 = arg1["content"]
             my_str = vo.get_value(arg2["content"])
-            pos = int(vo.get_value(arg3["content"]))
+            try:
+                pos = int(vo.get_value(arg3["content"]))
+            except:
+                raise exit(32)
 
             if not(0 < pos < len(my_str)):
                 exit(58)
@@ -324,7 +339,10 @@ class Instruction:
 
         if self._opc == "SETCHAR":
             var1 = arg1["content"]
-            pos = int(vo.get_value(arg2["content"]))
+            try:
+                pos = int(vo.get_value(arg2["content"]))
+            except:
+                raise exit(32)
             my_char = vo.get_value(arg3["content"])[0]
 
             temp = vo.get_value(var1)
