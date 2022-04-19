@@ -156,8 +156,7 @@ class Instruction:
         if self._opc == "MOVE":
             vo.set_value(arg1["content"], vo.get_value(arg2["content"]))
 
-            # TODO - type condition
-            vo.set_type(arg1["content"], arg2["type"])
+            vo.set_type(arg1["content"], vo.get_type(arg2))
 
         if self._opc == "NOT":
             result = "false"
@@ -312,13 +311,13 @@ class Instruction:
 
         if self._opc == "CONCAT":
             var1 = arg1["content"]
-            var2 = arg2["type"]
-            var3 = arg3["type"]
+            var2 = vo.get_type(arg2)
+            var3 = vo.get_type(arg2)
 
             if var2 != "string" or var3 != "string":
                 exit(53)
 
-            result = arg2["content"] + arg2["content"]
+            result = vo.get_value(arg2["content"]) + vo.get_value(arg3["content"])
 
             vo.set_type(var1, "string")
             vo.set_value(var1, result)

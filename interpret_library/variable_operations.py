@@ -58,14 +58,29 @@ def set_type(name, typ):
 
 
 def get_value(name):
-    if re.match("^[GF@|LF@|TF@]", name):
+    if name is None:
+        return ""
+
+    var1 = ""
+    try:
+        var1 = str(name)
+    except Exception:
+        exit(32)
+
+    if re.match("^[GF@|LF@|TF@]", var1):
         return str(search(name)["value"])
     else:
         return str(name)
 
 
 def get_type(arg):
-    if re.match("^[GF@|LF@|TF@]", arg["content"]):
+    var1 = ""
+    try:
+        var1 = str(arg["content"])
+    except Exception:
+        exit(32)
+
+    if re.match("^[GF@|LF@|TF@]", var1):
         return search(arg["content"])["type"]
     else:
         return arg["type"]

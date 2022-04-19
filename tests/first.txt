@@ -4,7 +4,7 @@
         <arg1 type="string">světe</arg1>
     </instruction>
     <instruction order="4" opcode="PUSHS">
-        <arg1 type="int">3k</arg1>
+        <arg1 type="int">32</arg1>
     </instruction>
     <instruction order="6" opcode="PUSHs">
         <arg1 type="string">ahoj</arg1>
