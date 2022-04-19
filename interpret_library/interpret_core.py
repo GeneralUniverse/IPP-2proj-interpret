@@ -106,6 +106,7 @@ class Instruction:
             var_stack_val = Instruction.var_stack.pop()
 
             vo.set_value(arg1["content"], vo.get_value(var_stack_val["content"]))
+            vo.set_type(arg1["content"], vo.get_type(var_stack_val))
 
         if self._opc == "WRITE":
             type1 = vo.get_type(arg1)
@@ -132,6 +133,9 @@ class Instruction:
 
         if self._opc == "EXIT":
             var1 = vo.get_value(arg1["content"])
+
+            if vo.get_type(arg1) != "int":
+                exit(53)
 
             if not(re.match("[0-49]", var1)):
                 exit(57)
@@ -161,6 +165,9 @@ class Instruction:
         if self._opc == "NOT":
             result = "false"
 
+            if vo.get_type(arg2) != "bool":
+                exit(53)
+
             if vo.get_value(arg2["content"]) == "false":
                 result = "true"
             elif arg2["content"] == "true":
@@ -173,6 +180,9 @@ class Instruction:
 
         if self._opc == "INT2CHAR":
             val = vo.get_value(arg2["content"])
+
+            if vo.get_type(arg2) != "int":
+                exit(53)
 
             try:
                 uni_num = int(val)
@@ -187,8 +197,13 @@ class Instruction:
             typ = arg2["content"]
             my_input = self._read_input
 
+            if vo.get_type(arg1) != "":
+                if typ != vo.get_type(arg1):
+                    exit(53)
+
             if typ == "string":
                 vo.set_value(arg1["content"], my_input.strip())
+                vo.set_type(arg1["content"], typ)               
 
             if typ == "int":
                 try:
@@ -197,6 +212,7 @@ class Instruction:
                     num = "nil"
                     vo.set_type(arg1["content"], "nil")
                 vo.set_value(arg1["content"], num)
+                vo.set_type(arg1["content"], typ)
 
             if typ == "bool":
                 var1 = "false"
@@ -205,20 +221,26 @@ class Instruction:
                     var1 = "true"
 
                 vo.set_value(arg1["content"], var1)
+                vo.set_type(arg1["content"], typ)
 
         if self._opc == "STRLEN":
             var1 = arg1["content"]
+
+            if vo.get_type(arg2) != "string":
+                exit(53)
 
             my_str = vo.get_value(arg2["content"])
             my_str_len = len(my_str)
 
             vo.set_value(var1, my_str_len)
+            vo.set_type(arg1["content"], int)
 
         if self._opc == "TYPE":
             var1 = arg1["content"]
 
             typ = vo.get_type(arg2)
             vo.set_value(var1, typ)
+            vo.set_type(var1, "string")
 
         ###################################################
         # 3 ARGUMENTS INSTRUCTIONS ##########################
@@ -259,7 +281,10 @@ class Instruction:
             var1 = vo.get_value(arg2["content"])
             var2 = vo.get_value(arg3["content"])
 
-            if vo.get_type(arg2) == "nil" and self._opc != "EQ":
+            if vo.get_type(arg2) != vo.get_type(arg2):
+                exit(53)
+
+            if vo.get_type(arg2) == "nil" and self._opc != "EQ" or vo.get_type(arg3) == "nil" and self._opc != "EQ":
                 exit(53)
 
             if self._opc == "LT":
@@ -283,6 +308,9 @@ class Instruction:
             var1 = vo.get_value(arg2["content"])
             var2 = vo.get_value(arg3["content"])
 
+            if vo.get_type(arg2) != "bool" or vo.get_type(arg3) != "bool":
+                exit(53)
+
             if self._opc == "AND":
                 if var1 == "true" and var2 == "true":
                     result = "true"
@@ -297,6 +325,9 @@ class Instruction:
         # other
         if self._opc == "STRI2INT":
             my_str = vo.get_value(arg2["content"])
+            if vo.get_type(arg2) != "string" or vo.get_type(arg3) != "int":
+                exit(53)
+
             try:
                 position = int(vo.get_value(arg3["content"]))
             except Exception:
@@ -308,6 +339,7 @@ class Instruction:
             selected_char = my_str[position]
 
             vo.set_value(arg1["content"], ord(selected_char))
+            vo.set_type(arg1["content"], "int")
 
         if self._opc == "CONCAT":
             var1 = arg1["content"]
@@ -325,6 +357,10 @@ class Instruction:
         if self._opc == "GETCHAR":
             var1 = arg1["content"]
             my_str = vo.get_value(arg2["content"])
+
+            if vo.get_type(arg2) != "string" or vo.get_type(arg3) != "int":
+                exit(53)
+
             try:
                 pos = int(vo.get_value(arg3["content"]))
             except Exception:
@@ -336,15 +372,20 @@ class Instruction:
             my_char = my_str[pos]
 
             vo.set_value(var1, my_char)
+            vo.set_type(var1, "string")
 
         if self._opc == "SETCHAR":
             var1 = arg1["content"]
+
+            if vo.get_type(arg2) != "int" or vo.get_type(arg3) != "string" or vo.get_type(arg2) != "string":
+                exit(53)
+
             try:
                 pos = int(vo.get_value(arg2["content"]))
             except Exception:
                 raise exit(32)
-            my_char = vo.get_value(arg3["content"])[0]
 
+            my_char = vo.get_value(arg3["content"])[0]
             temp = vo.get_value(var1)
 
             if pos >= len(temp) or len(temp) == 0:
