@@ -6,10 +6,9 @@ def create_args():
     args.add_argument("--input", nargs=1, help="input")
     args.add_argument("--source", nargs=1, help="source")
 
-    try:
-        args = args.parse_args()
-    except:
-        raise exit(10)
+
+    args = args.parse_args()
+
 
     return args
 

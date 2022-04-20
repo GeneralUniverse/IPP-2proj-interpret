@@ -10,10 +10,7 @@
         <arg1 type="var">GF@c</arg1>
     </instruction>
 
-    <instruction order="3" opcode="move">
-        <arg1 type="var">GF@a</arg1>
-        <arg2 type="bool">5</arg2>
-    </instruction>
+
 
 
     <instruction order="4" opcode="READ">
