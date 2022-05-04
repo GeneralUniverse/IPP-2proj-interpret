@@ -1,3 +1,5 @@
+points: 6,32/10 
+
 **Implementační dokumentace k 2. úloze do IPP 2021/2022**\
 **Jméno a příjmení: Dominik Klon**\
 **Login: xklond00**
